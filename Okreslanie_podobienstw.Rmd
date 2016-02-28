@@ -1,0 +1,37 @@
+---
+title: "Określanie podobieństw między abstraktami"
+author: "Michał Libura"
+date: "28 lutego 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy = TRUE)
+
+```
+
+```{r, echo = FALSE, include=FALSE}
+library(RISmed)
+query_clinical = "(plaque psoriasis) AND ((“randomized controlled trial”) OR (random*) OR (RCT) OR (((singl* OR doubl* OR trebl* OR tripl*) AND (blind* OR mask*)) OR (single blind) OR (double blind) OR (triple blind) OR (placebo) OR (placebo-controlled) OR (blinding) OR (controlled clinical trial) OR (random* AND controlled AND study*) OR (random* AND controlled AND trial*) OR ((random OR randomly) AND (allocation OR allocate*))))"
+medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 10, retstart = 400)
+medline = EUtilsGet(medline)
+source(file = "Find_similar.R")
+```
+##Wprowadzenie
+
+W analizie abstraktów cenne moim zdaniem może być określenie ich wzajemnego podobieństwa. Dzięki temu możliwe będzie usprawnienie tego procesu - przykładowo, analityk, który zidentyfikuje jeden istotny abstrakt, w następnej kolejności może sięgnąć po abstrakty, które są do niego najbardziej zbiżone.
+
+W celu oszacowania podobieństwa tekstów, należy najpierw uczynic je porównywalnymi. Celem funkcji *compute_tfidf* jest przetwozenie tekstu abstraktów na macierz częstotliwości słów (Document-Term Matrix). Zdecydowałem się zastosować reprezentację [tf-idf](http://www.tfidf.com/), która często stosowana jest w obszarze text miningu do klasyfikacji tekstów. Funkcja wykonuje także podstawowy preprocessing w postaci usunięcia mało istonych słów, interpunkcji czy zbędnych spacji, a także stemming. Budowa funkcji:
+
+```{r}
+compute_tfidf
+```
+
+Kolejnym krokiem jest obliczenie odległości między poszczególnymi abstraktami. W tym celu wykorzystałem miarę odległości kosinusowej, która lepiej oddaje odległość między tekstami niż zwykła odległość euklidesowa. Budowa funkcji *compute_cosine_dist*:
+
+```{r}
+compute_cosine_dist
+```
+
+Obie funkcje zostaną na etapie generowania wersji do druku wykorzystane do stworzenia listy najbardziej podobnych do danego abstraktu tekstów. Lista ta zostanie umieszczona w pliku do wydrukowania, tak aby analitycy mieli możliwość szybkiego zorientowania się, które teksty przypominają ten, który aktualnie przeglądają.

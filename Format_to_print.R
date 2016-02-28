@@ -1,4 +1,4 @@
-#Funkcja wykorzystująca wszystkie stworzone wcześniej w celu utworzenia wersji abstraktów do druku, zawierającej
+#Funkcja wykorzystująca wszystkie stworzone pozostałe w celu utworzenia wersji abstraktów do druku, zawierającej
 #wszystkie podstawowe informacje o abstrakcie, numer ID abstraktu, liczbę jego cytowań oraz tabelę rankingową podobnych do niego
 #tekstów (domyślnie 5)
 
