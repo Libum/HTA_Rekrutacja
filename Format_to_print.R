@@ -1,3 +1,7 @@
+#Funkcja wykorzystująca wszystkie stworzone wcześniej w celu utworzenia wersji abstraktów do druku, zawierającej
+#wszystkie podstawowe informacje o abstrakcie, numer ID abstraktu, liczbę jego cytowań oraz tabelę rankingową podobnych do niego
+#tekstów (domyślnie 5)
+
 prepare_to_print = function(medline, ranking = TRUE, similar = TRUE, nsim = 5){
         library(rmarkdown)
         med_list = attributes(medline)

@@ -16,7 +16,7 @@ library(RISmed)
 library(httr)
 library(XML)
 query_clinical = "(plaque psoriasis) AND ((“randomized controlled trial”) OR (random*) OR (RCT) OR (((singl* OR doubl* OR trebl* OR tripl*) AND (blind* OR mask*)) OR (single blind) OR (double blind) OR (triple blind) OR (placebo) OR (placebo-controlled) OR (blinding) OR (controlled clinical trial) OR (random* AND controlled AND study*) OR (random* AND controlled AND trial*) OR ((random OR randomly) AND (allocation OR allocate*))))"
-medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 20, retstart = 10)
+medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 10, retstart = 400)
 medline = EUtilsGet(medline)
 source(file = "citations_ranking.R")
 ```
@@ -66,6 +66,6 @@ kable(head(ranking), format = "markdown")
 
 ##Komentarze
 
-* Pozyskiwanie danych z Google Scholar jest problematyczne ze względu na to, że serwis ogranicza ilość możliwych wyszukań w danym okresie czasu - konieczne jest stosowanie znacznych przerw między poszczególnymi zapytaniami, ponieważ ryzykujemy tymczasową blokadą dostępu do treści (np. do czasu przepisania captchy). Proces pozyskiwania informacji o cytatach dla tekstów pozyskanych z bazy Pubmed jest zatem relatywnie długotrwały. Istnieje możliwość częściowego rozwiązania tego problemu poprzez częstą zmianę numeru IP (np. przy użyciu TORa), nie zajmowałem się jednak tym tematem bardziej, ponieważ wychodzi on znacznie poza tematykę projektu.
+* Pozyskiwanie danych z Google Scholar jest problematyczne ze względu na to, że serwis ogranicza ilość możliwych wyszukań w danym okresie czasu - konieczne jest stosowanie znacznych przerw między poszczególnymi zapytaniami, ponieważ ryzykujemy tymczasową blokadą dostępu do treści (np. do czasu przepisania captchy). Proces pozyskiwania informacji o cytatach dla tekstów pozyskanych z bazy Pubmed jest zatem relatywnie długotrwały. Istnieje możliwość częściowego rozwiązania tego problemu poprzez częstą zmianę numeru IP (np. przy użyciu proxy, TORa), nie zajmowałem się jednak tym tematem bardziej, ponieważ wychodzi on znacznie poza tematykę projektu.
 
 * Użyta metoda wyodrębniania informacji o ilości cytowań ze źródła strony (które traktowane jest tutaj po prostu jako tekst) jest dość prosta, spełnia jednak swoją funkcję. Zazwyczaj przy tego typu zadaniach korzysta się jednak z XMLa.
