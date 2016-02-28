@@ -15,10 +15,10 @@ extract_authors = function(medline){
 
 #Funkcja sprawdzająca ilość cytowań danego tekstu w Google Scholar
 check_citations = function(url){
-        Sys.sleep(time = sample(x = seq(1,15,0.1), size = 1))
+        Sys.sleep(time = sample(x = seq(4,15,0.1), size = 1))
         page = httr::GET(url = url)
         warn_for_status(page)
-        page = content(x = page, "text")
+        page = httr::content(x = page, as = "text")
         start = regexpr(pattern = "Cytowane przez ", text = page)[1]
         if (start != -1){
                 page = substr(x = page, start = start, stop = nchar(page))

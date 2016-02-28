@@ -17,5 +17,5 @@ rm(list = grep("(query)|(res)", x = ls(), value = T))
 
 #Stworzenie mniejszego zbioru tekstów, który będzie służył jako przykład, ilustrujący działanie funkcji
 
-medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 20)
+medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 20, retstart = 400)
 medline = EUtilsGet(medline)

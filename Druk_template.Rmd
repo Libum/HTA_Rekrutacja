@@ -7,15 +7,33 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warnings = FALSE)
 knitr::opts_chunk$set(results = "asis")
 
-
 ```
 
 ```{r, echo = FALSE, warning=FALSE}
 load(file = "data.RData")
 library(RISmed)
+library(lubridate)
+library(knitr)
+library(pander)
+authors = paste0("(", 1:nrow(authors), ")", authors$LastName, " ", authors$Initials)
+authors = paste(authors, collapse = ", ")
+similar_articles = data.frame(Id = sim_id, Title = sim_titles)
 ```
+**`r id`**   `r journal``r ifelse(is.na(year), "", paste0(", ", year))` `r ifelse(is.na(month), "", as.vector(lubridate::month(label = TRUE, month)))` `r ifelse(is.na(day), "", day)` (`r ifelse(is.na(issue), "", issue)` `r ifelse(is.na(volume), "", paste("vol.", volume))`)
+  
+Authors: `r authors`  
+  
+Affiliations: `r affiliation`  
+  
+## Title: `r title`  
+
+`r format(text, scientific = FALSE)`
+
+`r paste("PMID:", PMID, "[PubMed - indexed for MEDLINE]")`
+
+`r ifelse(exists("citations"), paste("Number of citations:", citations), "")`
+
 ```{r}
-format(title, scientific = FALSE)
-cat("\n")
-format(text, scientific = FALSE)
+pandoc.table(similar_articles, split.cells = c(5,65))
 ```
+
