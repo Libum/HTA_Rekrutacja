@@ -1,0 +1,71 @@
+---
+title: "Ranking cytowań"
+author: "Michał Libura"
+date: "27 lutego 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(tidy=TRUE)
+```
+```{r, echo=FALSE, warning = FALSE}
+library(knitr)
+library(RISmed)
+library(httr)
+library(XML)
+query_clinical = "(plaque psoriasis) AND ((“randomized controlled trial”) OR (random*) OR (RCT) OR (((singl* OR doubl* OR trebl* OR tripl*) AND (blind* OR mask*)) OR (single blind) OR (double blind) OR (triple blind) OR (placebo) OR (placebo-controlled) OR (blinding) OR (controlled clinical trial) OR (random* AND controlled AND study*) OR (random* AND controlled AND trial*) OR ((random OR randomly) AND (allocation OR allocate*))))"
+medline = EUtilsSummary(query_clinical, type="esearch", db="pubmed", retmax = 20, retstart = 10)
+medline = EUtilsGet(medline)
+source(file = "citations_ranking.R")
+```
+## Wprowadzenie
+
+Jednym z problemów, który został poruszony w opisie zadania jest odpowiednia hierarchizacja wyszukanych abstraktów, która pozwoli skupić się analitykom na tekstach, które z wysokim prawdopodobieństwem będą zawierały istotne informacje z perspektywy analizowanego problemu.
+
+Liczba cytowań danego artykułu w innych publikacjach może być jednym ze wskaźników jego istotności. Niestety, (zgodnie z moją wiedzą) baza Pubmed nie zawiera informacji na ten temat, należy zatem sięgnąć do źródeł zewnętrznych.
+
+Uzyskanie informacji o ilości cytowań nie jest jednak łatwe. API posiadaja komercyjne bazy abstraktów takie jak *Scopus* czy *Web of Science* - nie mam do nich dostępu ze względu na brak płatnej subskrypcji. Baza *Microsoft Academic Search* posiada ogólnodostępne API, jednak procedura utworzenia konta jest zbyt długotrwała, a sama baza nie jest aktualizowana od 2013 roku. Ostatecznie zdecydowałem się na wykorzystanie bazy *Google Scholar*, pomimo faktu, iż nie posiada ona swojego API, przez co dostęp do danych jest utrudniony.
+
+## Opis stworzonych funkcjonalności
+
+###Funkcja *create_urls* przetwarza tytuły oraz nazwiska głównych autorów artykułów pozyskanych z bazy Pubmed na adresy URL, zawierające zapytania do bazy *Google Scholar* o poszczególne teksty. Budowa funkcji i przykład działania:
+
+
+```{r, echo = FALSE}
+create_urls
+```
+```{r, results="asis"}
+urls = create_urls(medline)
+head(urls, n = 5)
+```
+
+
+###Funkcja *check_citations* pozyskuje informacje o ilości cytowań na podstawie podanego jej adresu URL (w oparciu o pierwszy wynik podawany przez Google Scholar) Budowa funkcji i przykład działania:
+
+```{r, echo=FALSE}
+check_citations
+```
+```{r}
+check_citations(urls[1])
+```
+
+
+###Finalna funkcja *create_ranking* wykorzystuje dwie wspomniane wcześniej w celu utworzenia ramki danych, zawierającej tytuły artykułów oraz liczbę cytowań, postortowaną malejąco według tej ostatniej. W ten sposób otrzymujemy ranking artykułów według liczby cytowań. Budowa i działanie funkcji (tytuły w tabeli wynikowej zostały przycięte):
+
+```{r, echo = FALSE}
+create_ranking
+```
+```{r, warning = FALSE, results="asis"}
+ranking = create_ranking(medline)
+ranking$Title = sapply(X = ranking$Title, FUN = substr, start = 1, stop = 40)
+kable(head(ranking), format = "markdown")
+```
+
+
+##Komentarze
+
+* Pozyskiwanie danych z Google Scholar jest problematyczne ze względu na to, że serwis ogranicza ilość możliwych wyszukań w danym okresie czasu - konieczne jest stosowanie znacznych przerw między poszczególnymi zapytaniami, ponieważ ryzykujemy tymczasową blokadą dostępu do treści (np. do czasu przepisania captchy). Proces pozyskiwania informacji o cytatach dla tekstów pozyskanych z bazy Pubmed jest zatem relatywnie długotrwały. Istnieje możliwość częściowego rozwiązania tego problemu poprzez częstą zmianę numeru IP (np. przy użyciu TORa), nie zajmowałem się jednak tym tematem bardziej, ponieważ wychodzi on znacznie poza tematykę projektu.
+
+* Użyta metoda wyodrębniania informacji o ilości cytowań ze źródła strony (które traktowane jest tutaj po prostu jako tekst) jest dość prosta, spełnia jednak swoją funkcję. Zazwyczaj przy tego typu zadaniach korzysta się jednak z XMLa.

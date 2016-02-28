@@ -1,0 +1,21 @@
+---
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warnings = FALSE)
+knitr::opts_chunk$set(results = "asis")
+
+
+```
+
+```{r, echo = FALSE, warning=FALSE}
+load(file = "data.RData")
+library(RISmed)
+```
+```{r}
+format(title, scientific = FALSE)
+cat("\n")
+format(text, scientific = FALSE)
+```
